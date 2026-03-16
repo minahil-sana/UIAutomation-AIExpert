@@ -43,10 +43,10 @@ test.describe.serial('AI Expert - Serial POM Flow', () => {
 		await sidePanelTasks.validateDefaultPanelAndTiles(page, enablementTiles);
 	});
 
-	// test('knowledge prompt flow with interaction actions and feedback', async () => {
-	// 	await sidePanelTasks.askKnowledgeQuestionAndValidateResponse(page);
-	// 	await sidePanelTasks.copyFeedbackAndDeleteLatestInteraction(page, 'Response is Accurate');
-	// });
+	test('knowledge prompt flow with interaction actions and feedback', async () => {
+		await sidePanelTasks.askKnowledgeQuestionAndValidateResponse(page);
+		await sidePanelTasks.copyFeedbackAndDeleteLatestInteraction(page, 'Response is Accurate');
+	});
 
 	test('devices flow with table, chart, download, rename and delete conversation', async () => {
 	    await sidePanelTasks.askDevicesQuestionAndValidateTable(page);

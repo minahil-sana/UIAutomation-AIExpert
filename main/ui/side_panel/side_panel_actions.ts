@@ -92,7 +92,7 @@ export async function renameConversation(page: Page, updatedTitle: string): Prom
 
 export async function deleteConversation(page: Page): Promise<void> {
 	const locators = sidePanelLocators.getSidePanelLocators(page);
-	await openConversationList(page);
+    await locators.conversationNameButton.hover();
 	await locators.conversationDeleteButton.click();
 	await locators.deleteConversationConfirmButton.click();
 }

@@ -61,6 +61,6 @@ export async function downloadConversation(page: Page): Promise<void> {
 
 export async function renameAndDeleteConversation(page: Page, updatedTitle: string): Promise<void> {
 	await sidePanelActions.renameConversation(page, updatedTitle);
-	// await sidePanelAssertions.expectConversationTitle(page, updatedTitle);
-	// await sidePanelActions.deleteConversation(page);
+	await sidePanelAssertions.expectConversationTitle(page, updatedTitle);
+	await sidePanelActions.deleteConversation(page);
 }

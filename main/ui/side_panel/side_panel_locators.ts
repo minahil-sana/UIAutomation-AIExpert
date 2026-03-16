@@ -62,10 +62,10 @@ export function getSidePanelLocators(page: Page): SidePanelLocators {
         horizontalBarChartSelected: page.getByTestId('chart-switch-horizontal_bar-selected'),
 		conversationDownloadButton: page.locator('.sc-hvigdm.kMpmen.pendo-chat-header__download-btn > .en-c-button'),
 		conversationListButton: page.getByTestId('conversation-history__btn'),
-		conversationNameButton: page.getByTestId('conversation-history__item--0'),
+		conversationNameButton: page.getByTestId('conversation-history__item--0-isSelected'),
         conversationRenameButton: page.getByTestId('conversation-history__item-edit-btn--0'),
 		conversationRenameInput: page.getByTestId('conversation-history__item-rename-input--0'),
-		conversationDeleteButton: page.locator('.sc-hvigdm.kMpmen.pendo-conversation-delete-btn > .en-c-button'),
+		conversationDeleteButton: page.getByTestId('conversation-history__item-delete-btn--0'),
 		conversationTitle: page.getByTestId('chat-header__title'),
 		deleteInteractionConfirmButton: page.getByTestId('confirm__model-confirm-btn').getByRole('button', { name: 'Delete' }),
 		deleteConversationConfirmButton: page.getByTestId('conversation-history__item-confirm-btn--0').getByRole('button', { name: 'Delete' }),
@@ -84,5 +84,5 @@ export function promptQuestionByKnowledge(page: Page ): Locator {
 
 export function promptQuestionByDevices(page: Page ): Locator {
     const aiExpertPanelRoot = page.locator('[id="single-spa-application:@xcloud-workspace/aiExpertPanel"]');
-	return aiExpertPanelRoot.getByTestId('prompt-item-Devices-0');
+	return aiExpertPanelRoot.getByTestId('prompt-item-Devices-2');
 }
