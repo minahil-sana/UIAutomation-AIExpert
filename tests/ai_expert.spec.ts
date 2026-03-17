@@ -3,10 +3,11 @@ import creds from '@test_data/login_creds.json';
 import { openLoginPage } from '@ui/login_page/login_page_actions';
 import { login } from '@ui/login_page/login_page_tasks';
 import { openWorkspaceLanding } from '@ui/landing_page/landing_page_actions';
-import { waitForLandingPageReady } from '@ui/landing_page/landing_page_assertions';
+import { waitForLandingPageReady } from '@utils/browser_actions.utils';
 import { openAiExpert } from '@ui/landing_page/landing_page_tasks';
 
 import * as sidePanelTasks from '@ui/side_panel/side_panel_tasks';
+import * as sidePanelAssertions from '@ui/side_panel/side_panel_assertions';
 
 type LoginCreds = {
 	username: string;
@@ -40,7 +41,7 @@ test.describe.serial('AI Expert - Serial POM Flow', () => {
 
 	test('open side panel and validate default tile sections', async () => {
 		await openAiExpert(page);
-		await sidePanelTasks.validateDefaultPanelAndTiles(page, enablementTiles);
+		await sidePanelAssertions.validateDefaultPanelAndTiles(page, enablementTiles);
 	});
 
 	test('knowledge prompt flow with interaction actions and feedback', async () => {
@@ -50,10 +51,10 @@ test.describe.serial('AI Expert - Serial POM Flow', () => {
 
 	test('devices flow with table, chart, download, rename and delete conversation', async () => {
 	    await sidePanelTasks.askDevicesQuestionAndValidateTable(page);
-	    //await sidePanelTasks.downloadTableCsv(page);
+	    await sidePanelTasks.downloadTableCsv(page);
 	    await sidePanelTasks.askFollowupAndValidateChart(page, 'Show me the distribution of my entitlements by application in a chart');
         await sidePanelTasks.switchChartAndDownloadImage(page);
-	    // await sidePanelTasks.downloadConversation(page);
+	    await sidePanelTasks.downloadConversation(page);
 	    await sidePanelTasks.renameAndDeleteConversation(page, 'Updated Title');
 	});
 });

@@ -13,6 +13,11 @@ export async function clickPromptQuestionByDevices(page: Page ): Promise<void> {
 	await sidePanelLocators.promptQuestionByDevices(page ).click();
 }
 
+export async function waitForSidePanelReady(page: Page): Promise<void> {
+	const locators = sidePanelLocators.getSidePanelLocators(page);
+	await expect(locators.panelContainer).toBeVisible();
+}
+
 
 export async function copyInteractionText(page: Page): Promise<void> {
 	const locators = sidePanelLocators.getSidePanelLocators(page);
@@ -24,32 +29,62 @@ export async function openFeedbackModal(page: Page): Promise<void> {
 	await locators.thumbsUpButton.click();
 }
 
-export async function submitPositiveFeedback(page: Page, additionalFeedback: string): Promise<void> {
+
+export async function scrollToConversationBottom(page: Page): Promise<void> {
 	const locators = sidePanelLocators.getSidePanelLocators(page);
-	await openFeedbackModal(page);
-	await locators.feedbackAccurateOption.click();
-	await locators.feedbackLabelInput.fill(additionalFeedback);
-	await locators.feedbackSubmitButton.click();
+	await locators.latestResponseMessage.scrollIntoViewIfNeeded();
+}
+export async function submitPositiveFeedback(page: Page, additionalFeedback: string): Promise<void> {
+    const locators = sidePanelLocators.getSidePanelLocators(page);
+    await openFeedbackModal(page);
+    await locators.feedbackAccurateOption.click();
+    await locators.feedbackLabelInput.fill(additionalFeedback);
+    await locators.feedbackSubmitButton.click();
 }
 
 export async function deleteInteraction(page: Page): Promise<void> {
-	const locators = sidePanelLocators.getSidePanelLocators(page);
-    await locators.additionalActions.click();
+    const locators = sidePanelLocators.getSidePanelLocators(page);
+    await locators.latestResponseMessage.hover();
+    await expect(locators.additionalActionsTrigger).toBeVisible({ timeout: 15000 });
+    await locators.additionalActionsTrigger.click();
+    
+    await expect(locators.deleteActionButton).toBeVisible({ timeout: 15000 });
     await locators.deleteActionButton.click();
-	await locators.deleteInteractionConfirmButton.click();
+    await locators.deleteInteractionConfirmButton.click();
 }
 
-export async function downloadInteractionCsv(page: Page): Promise<Download> {
-	const locators = sidePanelLocators.getSidePanelLocators(page);
-     await locators.additionalActions.click();
+export async function downloadInteractionCsv(page: Page) {
+    const locators = sidePanelLocators.getSidePanelLocators(page);
+    await locators.latestResponseMessage.scrollIntoViewIfNeeded();
+    await locators.latestResponseMessage.hover();
+    await expect(locators.additionalActionsTrigger).toBeVisible({ timeout: 15000 });
 
     const [download] = await Promise.all([
+        page.waitForEvent('download'),
+        (async () => {
+            await locators.additionalActionsTrigger.click({ force: true });
+            await locators.interactionDownloadButton.dispatchEvent('click');
+        })(),
+    ]);
+
+    return download;
+}
+
+export async function downloadChartImage(page: Page): Promise<Download> {
+	const locators = sidePanelLocators.getSidePanelLocators(page);
+	await locators.latestResponseMessage.scrollIntoViewIfNeeded();
+	await locators.latestResponseMessage.hover();
+	await expect(locators.additionalActionsTrigger).toBeVisible({ timeout: 15000 });
+
+	const [download] = await Promise.all([
 		page.waitForEvent('download'),
-		locators.interactionDownloadButton.click()
+		(async () => {
+			await locators.additionalActionsTrigger.click({ force: true });
+			await locators.interactionDownloadButton.dispatchEvent('click');
+		})(),
 	]);
 
 	return download;
-
 }
 
 export async function askFollowUpInChat(page: Page, prompt: string): Promise<void> {
@@ -68,11 +103,19 @@ export async function switchChartTypeToHorizontalBar(page: Page): Promise<void> 
 
 export async function downloadConversationZip(page: Page): Promise<Download> {
 	const locators = sidePanelLocators.getSidePanelLocators(page);
-	const downloadPromise = page.waitForEvent('download');
-    await locators.additionalActions.click();
-    await expect(locators.conversationDownloadButton).toBeVisible({ timeout: 15000 });
-	await locators.conversationDownloadButton.click();
-	return downloadPromise;
+	await locators.latestResponseMessage.scrollIntoViewIfNeeded();
+	await locators.latestResponseMessage.hover();
+	await expect(locators.additionalActionsTrigger).toBeVisible({ timeout: 15000 });
+
+	const [download] = await Promise.all([
+		page.waitForEvent('download'),
+		(async () => {
+			await locators.additionalActionsTrigger.click({ force: true });
+			await locators.conversationDownloadButton.dispatchEvent('click');
+		})(),
+	]);
+
+	return download;
 }
 
 export async function openConversationList(page: Page): Promise<void> {
@@ -88,9 +131,12 @@ export async function renameConversation(page: Page, updatedTitle: string): Prom
 	await locators.conversationRenameInput.fill(updatedTitle);
 	await locators.conversationRenameInput.press('Enter');
     await expect(locators.conversationTitle).toContainText(updatedTitle, {timeout: 15000});
+    await openConversationList(page);
+
 }
 
 export async function deleteConversation(page: Page): Promise<void> {
+    await openConversationList(page);
 	const locators = sidePanelLocators.getSidePanelLocators(page);
     await locators.conversationNameButton.hover();
 	await locators.conversationDeleteButton.click();
@@ -99,5 +145,7 @@ export async function deleteConversation(page: Page): Promise<void> {
 
 export async function openInteractionActions(page: Page): Promise<void> {
 	const locators = sidePanelLocators.getSidePanelLocators(page);
-	await locators.additionalActions.click();
+	await locators.latestResponseMessage.hover();
+	await expect(locators.additionalActionsTrigger).toBeVisible({ timeout: 15000 });
+	await locators.additionalActionsTrigger.click();
 }

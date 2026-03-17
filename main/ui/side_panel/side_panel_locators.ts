@@ -9,6 +9,7 @@ export type SidePanelLocators = {
 	deleteActionButton: Locator;
 	copyInteractionButton: (index: number) => Locator;
     additionalActions: Locator;
+	additionalActionsTrigger: Locator;
 	thumbsUpButton: Locator;
     thumbsDownButton: Locator;
 	feedbackLabelInput: Locator;
@@ -36,16 +37,18 @@ export type SidePanelLocators = {
 
 export function getSidePanelLocators(page: Page): SidePanelLocators {
 	const aiExpertPanelRoot = page.locator('[id="single-spa-application:@xcloud-workspace/aiExpertPanel"]');
+	const latestResponseMessage = page.getByTestId(/interaction__response-message--interaction-\d+/).last();
 
 	return {
 		panelContainer: page.locator('.app-layout.is-ai-expert-open'),
 		emptyStateContainer: aiExpertPanelRoot.getByTestId('EvaPrompts'),
 		promptBackButton: page.getByTestId('chat__prompt-back-btn'),
 		chatInput: page.getByTestId('chat__input'),
-		latestResponseMessage: page.getByTestId(/interaction__response-message--interaction-\d+/).last(),
-		deleteActionButton: page.getByTestId(/interaction__delete-btn--interaction-\d+/).last(),
+		latestResponseMessage,
+		deleteActionButton: latestResponseMessage.getByTestId(/interaction__delete-btn--interaction-\d+/),
         copyInteractionButton: (index: number) => page.getByTestId(`interaction__copy-btn--interaction-${index}`),		
-        additionalActions: page.getByTestId('eva-additional-actions-panel'),
+		additionalActions: latestResponseMessage.getByTestId('eva-additional-actions-panel'),
+		additionalActionsTrigger: latestResponseMessage.getByTestId('eva-additional-actions-panel').locator('[slot="trigger"]'),
 		thumbsUpButton: page.getByTestId(/interaction__feedback-like-btn--interaction-\d+/).last(),
 		thumbsDownButton: page.getByTestId(/interaction__feedback-dislike-btn--interaction-\d+/).last(),
         feedbackLabelInput: page.getByTestId('interaction__feedback-message-input--interaction-0').locator('textarea'),
@@ -53,7 +56,7 @@ export function getSidePanelLocators(page: Page): SidePanelLocators {
         feedbackAccurateOption: page.getByTestId('interaction__feedback-reaction-btn--interaction-0-reaction-0'),
 		feedbackSuccessToast: page.getByText('Thank you for your valuable feedback'),
 		copyAlert: page.getByRole('alert'),
-		interactionDownloadButton: page.getByTestId(/interaction__download-btn--interaction-\d+/).last(),
+		interactionDownloadButton: latestResponseMessage.getByTestId(/interaction__download-btn--interaction-\d+/),
 		reasoningStatus: page.locator('span.sc-gWaSiO'),
 		tableResponseContainer: page.getByTestId('eva-table'),
 		chartResponseContainer: page.getByTestId('chart').last(),

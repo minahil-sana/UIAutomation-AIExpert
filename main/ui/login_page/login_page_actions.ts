@@ -17,22 +17,9 @@ export async function fillPassword(page: Page, password: string): Promise<void> 
 	await locators.passwordInput.fill(password);
 }
 
-export async function fillCredentials(page: Page, username: string, password: string): Promise<void> {
-	await fillUsername(page, username);
-	await fillPassword(page, password);
-}
 
 export async function clickLogin(page: Page): Promise<void> {
 	const locators = getLoginPageLocators(page);
 	await locators.loginButton.click();
 }
 
-export async function clickLoginWithSso(page: Page): Promise<void> {
-	const locators = getLoginPageLocators(page);
-	await locators.loginWithSsoButton.click();
-}
-
-export async function clickForgotPassword(page: Page): Promise<void> {
-	const locators = getLoginPageLocators(page);
-	await locators.forgotPasswordLink.click();
-}

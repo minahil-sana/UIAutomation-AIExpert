@@ -1,17 +1,38 @@
-import { expect, Page } from '@playwright/test';
+import { Download, expect, Page } from '@playwright/test';
+import { promises as fs } from 'node:fs';
+import path from 'node:path';
 import * as sidePanelActions from '@ui/side_panel/side_panel_actions';
 import * as sidePanelAssertions from '@ui/side_panel/side_panel_assertions';
-import { getSidePanelLocators } from '@ui/side_panel/side_panel_locators';
+import * as sidePanelLocators from '@ui/side_panel/side_panel_locators';
 
-export async function expectSidePanelReady(page: Page): Promise<void> {
-	await sidePanelAssertions.waitForSidePanelReady(page);
+function getDownloadsDirectory(): string {
+	const homeDir = process.env.USERPROFILE ?? process.env.HOME;
+	if (!homeDir) {
+		throw new Error('Unable to determine user home directory for Downloads verification.');
+	}
+
+	return path.join(homeDir, 'Downloads');
 }
 
-export async function validateDefaultPanelAndTiles(page: Page, tileNames: string[]): Promise<void> {
-	await sidePanelAssertions.waitForSidePanelReady(page);
-	await sidePanelAssertions.expectEmptyDefaultScreen(page);
-	await sidePanelAssertions.expectEnablementTilesVisible(page, tileNames);
+async function saveAndVerifyDownload(
+	download: Download,
+	extension: '.csv' | '.png' | '.zip',
+	startedAtMs: number,
+): Promise<void> {
+	const downloadsDir = getDownloadsDirectory();
+	const suggestedFileName = download.suggestedFilename();
+	const downloadPath = path.join(downloadsDir, `${Date.now()}-${suggestedFileName}`);
+	await download.saveAs(downloadPath);
+	
+	const stats = await fs.stat(downloadPath);
+	const fileExtension = path.extname(downloadPath).toLowerCase();
+	const clockToleranceMs = 120000;
+
+	expect(fileExtension).toBe(extension);
+	expect(stats.mtimeMs).toBeGreaterThanOrEqual(startedAtMs - clockToleranceMs);
+	expect(stats.mtimeMs).toBeLessThanOrEqual(Date.now() + clockToleranceMs);
 }
+
 
 export async function askKnowledgeQuestionAndValidateResponse(page: Page): Promise<void> {
 	await sidePanelActions.clickEnablementTile(page, 'Knowledge');
@@ -21,7 +42,7 @@ export async function askKnowledgeQuestionAndValidateResponse(page: Page): Promi
 }
 
 export async function copyFeedbackAndDeleteLatestInteraction(page: Page, feedbackMessage: string): Promise<void> {
-	const locators = getSidePanelLocators(page);
+	const locators = sidePanelLocators.getSidePanelLocators(page);
 	await sidePanelActions.copyInteractionText(page);
 	await expect(locators.copyAlert).toBeVisible();
 
@@ -36,11 +57,14 @@ export async function askDevicesQuestionAndValidateTable(page: Page): Promise<vo
 	await sidePanelActions.clickPromptQuestionByDevices(page);
 	await sidePanelAssertions.expectReasoningVisible(page);
 	await sidePanelAssertions.expectTableResponseGenerated(page);
+    
 }
 
 export async function downloadTableCsv(page: Page): Promise<void> {
+	await sidePanelActions.scrollToConversationBottom(page);
+	const startedAtMs = Date.now();
 	const download = await sidePanelActions.downloadInteractionCsv(page);
-	expect(await download.suggestedFilename()).toContain('.csv');
+	await saveAndVerifyDownload(download, '.csv', startedAtMs);
 }
 
 export async function askFollowupAndValidateChart(page: Page, question: string): Promise<void> {
@@ -51,12 +75,16 @@ export async function askFollowupAndValidateChart(page: Page, question: string):
 export async function switchChartAndDownloadImage(page: Page): Promise<void> {
     await sidePanelActions.switchChartTypeToHorizontalBar(page);
     await sidePanelAssertions.expectChartTypeSwitched(page);
-    // await sidePanelActions.downloadChartImage(page);
+
+	const startedAtMs = Date.now();
+	const chartDownload = await sidePanelActions.downloadChartImage(page);
+	await saveAndVerifyDownload(chartDownload, '.png', startedAtMs);
 }
 
 export async function downloadConversation(page: Page): Promise<void> {
-	const conversationZip = await sidePanelActions.downloadConversationZip(page);
-	expect(await conversationZip.suggestedFilename()).toContain('.zip');
+	const startedAtMs = Date.now();
+	const conversationDownload = await sidePanelActions.downloadConversationZip(page);
+	await saveAndVerifyDownload(conversationDownload, '.zip', startedAtMs);
 }
 
 export async function renameAndDeleteConversation(page: Page, updatedTitle: string): Promise<void> {
@@ -64,3 +92,4 @@ export async function renameAndDeleteConversation(page: Page, updatedTitle: stri
 	await sidePanelAssertions.expectConversationTitle(page, updatedTitle);
 	await sidePanelActions.deleteConversation(page);
 }
+

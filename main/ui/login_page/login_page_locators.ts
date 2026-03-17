@@ -13,7 +13,6 @@ export function getLoginPageLocators(page: Page): LoginPageLocators {
 	return {
 		loginForm: page.locator('form.login-form'),
 
-		// These components are custom web components. Playwright CSS locators pierce open shadow roots.
 		usernameInput: page.locator('en-text-field.cs-auto-login-email-txt input[type="text"]'),
 		passwordInput: page.locator('en-text-field.cs-auto-login-password-txt input[type="password"]'),
 

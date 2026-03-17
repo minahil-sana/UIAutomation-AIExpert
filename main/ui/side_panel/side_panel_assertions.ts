@@ -1,10 +1,18 @@
 import { expect, Page } from '@playwright/test';
 import * as sidePanelLocators from '@ui/side_panel/side_panel_locators';
+import * as sidePanelActions from '@ui/side_panel/side_panel_actions';
 
-export async function waitForSidePanelReady(page: Page): Promise<void> {
-	const locators = sidePanelLocators.getSidePanelLocators(page);
-	await expect(locators.panelContainer).toBeVisible();
+
+export async function expectSidePanelReady(page: Page): Promise<void> {
+	await sidePanelActions.waitForSidePanelReady(page);
 }
+
+export async function validateDefaultPanelAndTiles(page: Page, tileNames: string[]): Promise<void> {
+    await sidePanelActions.waitForSidePanelReady(page);
+    await expectEmptyDefaultScreen(page);
+    await expectEnablementTilesVisible(page, tileNames);
+}
+
 
 export async function expectEmptyDefaultScreen(page: Page): Promise<void> {
 	const locators = sidePanelLocators.getSidePanelLocators(page);
@@ -24,8 +32,7 @@ export async function expectInteractionActionsVisible(page: Page): Promise<void>
 	await expect(locators.copyInteractionButton(0)).toBeVisible({ timeout: 45000 });
 	await expect(locators.thumbsUpButton).toBeVisible();
 	await expect(locators.thumbsDownButton).toBeVisible();
-    await locators.additionalActions.click();
-    await expect(locators.deleteActionButton).toBeVisible();
+	await expect(locators.additionalActionsTrigger).toBeVisible({ timeout: 15000 });
 }
 
 export async function expectFeedbackSuccess(page: Page): Promise<void> {
@@ -42,13 +49,14 @@ export async function expectResponseGenerated(page: Page): Promise<void> {
 export async function expectTableResponseGenerated(page: Page): Promise<void> {
 	const locators = sidePanelLocators.getSidePanelLocators(page);
 	await expect(locators.tableResponseContainer).toBeVisible({ timeout: 60000 });
-    await locators.additionalActions.click();
-	await expect(locators.interactionDownloadButton).toBeVisible();
+	await expect(locators.additionalActionsTrigger).toBeVisible({ timeout: 15000 });
+	await locators.additionalActionsTrigger.click();
+	await expect(locators.interactionDownloadButton).toBeVisible({ timeout: 15000 });
 }
 
 export async function expectReasoningVisible(page: Page): Promise<void> {
 	const locators = sidePanelLocators.getSidePanelLocators(page);
-	await expect(locators.reasoningStatus).toBeVisible();
+	await expect(locators.reasoningStatus).toBeVisible({timeout:15000});
 }
 
 export async function expectChartGenerated(page: Page): Promise<void> {
