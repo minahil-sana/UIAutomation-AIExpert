@@ -2,6 +2,9 @@ import { Page } from '@playwright/test';
 import { getLoginPageLocators } from '@ui/login_page/login_page_locators';
 import { waitForLoginPageReady } from '@ui/login_page/login_page_assertions';
 
+
+//! as mentioned in the spec file, dont create seperate action for it, in the login task it should be
+//? await page.goto(config.baseURL ) and then fillUsername, fillPasword and click login button in the task file
 export async function openLoginPage(page: Page): Promise<void> {
 	await page.goto('https://st2.sso.xcloudiq.com/ws-login/', { waitUntil: 'domcontentloaded' });
 	await waitForLoginPageReady(page);

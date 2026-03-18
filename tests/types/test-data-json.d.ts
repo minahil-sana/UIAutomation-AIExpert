@@ -5,3 +5,5 @@ declare module '@test_data/*.json' {
 	};
 	export default value;
 }
+
+//! This file is not required at all, why its created?
