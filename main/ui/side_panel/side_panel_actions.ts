@@ -1,6 +1,6 @@
 import {expect, Download, Page } from '@playwright/test';
 import * as sidePanelLocators from '@ui/side_panel/side_panel_locators';
-
+//! folder naming side_panel is not good make it conversational_panel
 export async function clickEnablementTile(page: Page, tileName: string): Promise<void> {
 	await sidePanelLocators.enablementTileByName(page, tileName).click();
 }
@@ -13,6 +13,9 @@ export async function clickPromptQuestionByDevices(page: Page ): Promise<void> {
 	await sidePanelLocators.promptQuestionByDevices(page ).click();
 }
 
+//! this is an assertion function directly add it to assertion file
+//! assertion functions name should start with word "verify"
+//? example verifyPromptQuestionByKnowledgeIsClicked or verifyPromptQuestionByDevicesIsClicked
 export async function waitForSidePanelReady(page: Page): Promise<void> {
 	const locators = sidePanelLocators.getSidePanelLocators(page);
 	await expect(locators.panelContainer).toBeVisible();
@@ -135,6 +138,7 @@ export async function renameConversation(page: Page, updatedTitle: string): Prom
 
 }
 
+//! this is a task as it contains multiple actions
 export async function deleteConversation(page: Page): Promise<void> {
     await openConversationList(page);
 	const locators = sidePanelLocators.getSidePanelLocators(page);

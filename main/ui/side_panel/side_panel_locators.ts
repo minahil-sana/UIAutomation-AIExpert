@@ -85,6 +85,8 @@ export function promptQuestionByKnowledge(page: Page ): Locator {
 	return aiExpertPanelRoot.getByTestId('prompt-item-Knowledge-0');
 }
 
+//! parametrize this function e.g one paramter should be category i.e Devices, Knowledge and other paramter would be question number like 1,2
+//* thus function signature would look like this promptQuestionByCategoryAndNumber(page: Page, category: string, questionNumber: number): Locator
 export function promptQuestionByDevices(page: Page ): Locator {
     const aiExpertPanelRoot = page.locator('[id="single-spa-application:@xcloud-workspace/aiExpertPanel"]');
 	return aiExpertPanelRoot.getByTestId('prompt-item-Devices-2');
