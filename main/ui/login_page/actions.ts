@@ -12,7 +12,7 @@ export async function fillPassword(page: Page, password: string): Promise<void> 
 	await typeText(locators.getPasswordInput(page), password, 'Fill password');
 }
 
-export async function clickLogin(page: Page): Promise<void> {
+export async function clickLoginButton(page: Page): Promise<void> {
 	const locators = loginPageLocators;
 	await clickElement(locators.getLoginButton(page), 'Click login button');
 }

@@ -13,7 +13,7 @@ export async function login(page: Page, username: string, password: string, base
 
 	await loginPageActions.fillUsername(page, username);
 	await loginPageActions.fillPassword(page, password);
-	await loginPageActions.clickLogin(page);
+	await loginPageActions.clickLoginButton(page);
 
 	// Wait for redirect to workspace after login
 	await page.waitForURL(/st2\.ep1test\.com\/workspace/, {

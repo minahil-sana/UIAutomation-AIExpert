@@ -1,17 +1,15 @@
 import { expect, Page } from '@playwright/test';
 import { conversationalPanelLocators } from '@ui/conversational_panel/locators';
 
-
-export async function verifySidePanelReady(page: Page): Promise<void> {
+export async function verifySidePanelIsVisible(page: Page): Promise<void> {
 	await expect(conversationalPanelLocators['Panel Layout'].getPanelContainer(page)).toBeVisible();
 }
 
 export async function verifyDefaultPanelAndTiles(page: Page, tileNames: string[]): Promise<void> {
-	await verifySidePanelReady(page);
+	await verifySidePanelIsVisible(page);
 	await verifyEmptyDefaultScreen(page);
 	await verifyEnablementTilesVisible(page, tileNames);
 }
-
 
 export async function verifyEmptyDefaultScreen(page: Page): Promise<void> {
 	await expect(conversationalPanelLocators['Panel Layout'].getEmptyStateContainer(page)).toBeVisible();
@@ -25,7 +23,6 @@ export async function verifyEnablementTilesVisible(page: Page, tileNames: string
 
 export async function verifyInteractionActionsVisible(page: Page): Promise<void> {
 	await conversationalPanelLocators.getLatestResponseMessage(page).hover();
-
 	await expect(conversationalPanelLocators['Interaction Actions'].getCopyInteractionButton(page, 0)).toBeVisible({ timeout: 45000 });
 	await expect(conversationalPanelLocators['Interaction Feedback'].getThumbsUpButton(page)).toBeVisible();
 	await expect(conversationalPanelLocators['Interaction Feedback'].getThumbsDownButton(page)).toBeVisible();
@@ -38,7 +35,6 @@ export async function verifyFeedbackSuccess(page: Page): Promise<void> {
 
 export async function verifyResponseGenerated(page: Page): Promise<void> {
 	await expect(conversationalPanelLocators['Interaction Actions'].getCopyInteractionButton(page, 0)).toBeVisible({ timeout: 45000 });
-
 }
 
 export async function verifyTableResponseGenerated(page: Page): Promise<void> {

@@ -1,8 +1,8 @@
 import { BrowserContext, Page, test } from '@playwright/test';
 import creds from '@test_data/login_creds.json';
 import { login } from '@ui/login_page/tasks';
-import { openWorkspaceLanding , openAiExpertSidePanel } from '@ui/landing_page/actions';
-import { expectAiExpertLauncherVisible } from '@ui/landing_page/assertions';
+import { openAiExpertSidePanel } from '@ui/landing_page/actions';
+import { verifyAiExpertLauncherVisible, verifyLandingPageReady } from '@ui/landing_page/assertions';
 
 import * as sidePanelTasks from '@ui/conversational_panel/tasks';
 import * as sidePanelAssertions from '@ui/conversational_panel/assertions';
@@ -22,7 +22,6 @@ test.describe.serial('AI Expert - Serial POM Flow', () => {
 
 	let context: BrowserContext;
 	let page: Page;
-	let isInitialized = false;
 
 	test.beforeAll(async ({ browser }) => {
 		context = await browser.newContext({ acceptDownloads: true });
@@ -34,12 +33,9 @@ test.describe.serial('AI Expert - Serial POM Flow', () => {
 	});
 
 	test('login to application and validate landing page', async () => {
-		if (!isInitialized) {
-			await login(page, loginCreds.username, loginCreds.password, loginCreds.baseURL);
-			await openWorkspaceLanding(page, loginCreds.workspaceURL);
-			isInitialized = true;
-		}
-		await expectAiExpertLauncherVisible(page);
+		await login(page, loginCreds.username, loginCreds.password, loginCreds.baseURL);
+		await verifyLandingPageReady(page);
+		await verifyAiExpertLauncherVisible(page);
 	});
 
 	test('open side panel and validate default tile sections', async () => {
