@@ -1,44 +1,31 @@
 import {expect, Download, Page } from '@playwright/test';
-import * as sidePanelLocators from '@ui/side_panel/side_panel_locators';
-//! folder naming side_panel is not good make it conversational_panel
+import { conversationalPanelLocators } from '@ui/conversational_panel/locators';
+
 export async function clickEnablementTile(page: Page, tileName: string): Promise<void> {
-	await sidePanelLocators.enablementTileByName(page, tileName).click();
+	await conversationalPanelLocators.enablementTileByName(page, tileName).click();
 }
 
-export async function clickPromptQuestionByKnowledge(page: Page ): Promise<void> {
-	await sidePanelLocators.promptQuestionByKnowledge(page ).click();
+export async function clickPromptQuestionByCategoryAndNumber(page: Page, category: string, questionNumber: number): Promise<void> {
+	await conversationalPanelLocators.promptQuestionByCategoryAndNumber(page, category, questionNumber).click();
 }
-
-export async function clickPromptQuestionByDevices(page: Page ): Promise<void> {
-	await sidePanelLocators.promptQuestionByDevices(page ).click();
-}
-
-//! this is an assertion function directly add it to assertion file
-//! assertion functions name should start with word "verify"
-//? example verifyPromptQuestionByKnowledgeIsClicked or verifyPromptQuestionByDevicesIsClicked
-export async function waitForSidePanelReady(page: Page): Promise<void> {
-	const locators = sidePanelLocators.getSidePanelLocators(page);
-	await expect(locators.panelContainer).toBeVisible();
-}
-
 
 export async function copyInteractionText(page: Page): Promise<void> {
-	const locators = sidePanelLocators.getSidePanelLocators(page);
+	const locators = conversationalPanelLocators.getConversationalPanelLocators(page);
 	await locators.copyInteractionButton(0).click();
 }
 
 export async function openFeedbackModal(page: Page): Promise<void> {
-	const locators = sidePanelLocators.getSidePanelLocators(page);
+	const locators = conversationalPanelLocators.getConversationalPanelLocators(page);
 	await locators.thumbsUpButton.click();
 }
 
 
 export async function scrollToConversationBottom(page: Page): Promise<void> {
-	const locators = sidePanelLocators.getSidePanelLocators(page);
+	const locators = conversationalPanelLocators.getConversationalPanelLocators(page);
 	await locators.latestResponseMessage.scrollIntoViewIfNeeded();
 }
 export async function submitPositiveFeedback(page: Page, additionalFeedback: string): Promise<void> {
-    const locators = sidePanelLocators.getSidePanelLocators(page);
+    const locators = conversationalPanelLocators.getConversationalPanelLocators(page);
     await openFeedbackModal(page);
     await locators.feedbackAccurateOption.click();
     await locators.feedbackLabelInput.fill(additionalFeedback);
@@ -46,7 +33,7 @@ export async function submitPositiveFeedback(page: Page, additionalFeedback: str
 }
 
 export async function deleteInteraction(page: Page): Promise<void> {
-    const locators = sidePanelLocators.getSidePanelLocators(page);
+    const locators = conversationalPanelLocators.getConversationalPanelLocators(page);
     await locators.latestResponseMessage.hover();
     await expect(locators.additionalActionsTrigger).toBeVisible({ timeout: 15000 });
     await locators.additionalActionsTrigger.click();
@@ -57,7 +44,7 @@ export async function deleteInteraction(page: Page): Promise<void> {
 }
 
 export async function downloadInteractionCsv(page: Page) {
-    const locators = sidePanelLocators.getSidePanelLocators(page);
+    const locators = conversationalPanelLocators.getConversationalPanelLocators(page);
     await locators.latestResponseMessage.scrollIntoViewIfNeeded();
     await locators.latestResponseMessage.hover();
     await expect(locators.additionalActionsTrigger).toBeVisible({ timeout: 15000 });
@@ -74,7 +61,7 @@ export async function downloadInteractionCsv(page: Page) {
 }
 
 export async function downloadChartImage(page: Page): Promise<Download> {
-	const locators = sidePanelLocators.getSidePanelLocators(page);
+	const locators = conversationalPanelLocators.getConversationalPanelLocators(page);
 	await locators.latestResponseMessage.scrollIntoViewIfNeeded();
 	await locators.latestResponseMessage.hover();
 	await expect(locators.additionalActionsTrigger).toBeVisible({ timeout: 15000 });
@@ -91,13 +78,13 @@ export async function downloadChartImage(page: Page): Promise<Download> {
 }
 
 export async function askFollowUpInChat(page: Page, prompt: string): Promise<void> {
-	const locators = sidePanelLocators.getSidePanelLocators(page);
+	const locators = conversationalPanelLocators.getConversationalPanelLocators(page);
 	await locators.chatInput.fill(prompt);
 	await locators.chatInput.press('Enter');
 }
 
 export async function switchChartTypeToHorizontalBar(page: Page): Promise<void> {
-	const locators = sidePanelLocators.getSidePanelLocators(page);
+	const locators = conversationalPanelLocators.getConversationalPanelLocators(page);
 	await locators.chartOptionsButton.click();
 	await locators.horizontalBarChartOption.click();
 }
@@ -105,7 +92,7 @@ export async function switchChartTypeToHorizontalBar(page: Page): Promise<void> 
 
 
 export async function downloadConversationZip(page: Page): Promise<Download> {
-	const locators = sidePanelLocators.getSidePanelLocators(page);
+	const locators = conversationalPanelLocators.getConversationalPanelLocators(page);
 	await locators.latestResponseMessage.scrollIntoViewIfNeeded();
 	await locators.latestResponseMessage.hover();
 	await expect(locators.additionalActionsTrigger).toBeVisible({ timeout: 15000 });
@@ -122,12 +109,12 @@ export async function downloadConversationZip(page: Page): Promise<Download> {
 }
 
 export async function openConversationList(page: Page): Promise<void> {
-	const locators = sidePanelLocators.getSidePanelLocators(page);
+	const locators = conversationalPanelLocators.getConversationalPanelLocators(page);
 	await locators.conversationListButton.click();
 }
 
 export async function renameConversation(page: Page, updatedTitle: string): Promise<void> {
-	const locators = sidePanelLocators.getSidePanelLocators(page);
+	const locators = conversationalPanelLocators.getConversationalPanelLocators(page);
 	await openConversationList(page);
     await locators.conversationNameButton.hover();
 	await locators.conversationRenameButton.click();
@@ -138,17 +125,8 @@ export async function renameConversation(page: Page, updatedTitle: string): Prom
 
 }
 
-//! this is a task as it contains multiple actions
-export async function deleteConversation(page: Page): Promise<void> {
-    await openConversationList(page);
-	const locators = sidePanelLocators.getSidePanelLocators(page);
-    await locators.conversationNameButton.hover();
-	await locators.conversationDeleteButton.click();
-	await locators.deleteConversationConfirmButton.click();
-}
-
 export async function openInteractionActions(page: Page): Promise<void> {
-	const locators = sidePanelLocators.getSidePanelLocators(page);
+	const locators = conversationalPanelLocators.getConversationalPanelLocators(page);
 	await locators.latestResponseMessage.hover();
 	await expect(locators.additionalActionsTrigger).toBeVisible({ timeout: 15000 });
 	await locators.additionalActionsTrigger.click();

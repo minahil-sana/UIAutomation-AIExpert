@@ -31,10 +31,7 @@ coverage/
 *.local
 
 # Sensitive test data (credentials)
-/main/test_data/
-/test_data/
 **/login_creds.json
-**/*creds*.json
 
 # IDE / OS
 .DS_Store
