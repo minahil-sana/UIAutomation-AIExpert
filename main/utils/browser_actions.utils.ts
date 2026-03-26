@@ -1,17 +1,18 @@
-import { Page } from '@playwright/test';
-import { getLandingPageLocators } from '@ui/landing_page/landing_page_locators';
+import { Locator } from '@playwright/test';
 
-export async function waitForLandingPageReady(page: Page): Promise<void> {
-	const locators = getLandingPageLocators(page);
+export async function typeText(locator: Locator, value: string, message: string, clear: boolean = true): Promise<void> {
+  try {
+    clear && (await locator.fill('', { timeout: 30000 }));
+    await locator.fill(value, { timeout: 30000 });
+  } catch (error) {
+    throw new Error(`${message} - Type text action failed after 30000 ms - ${error}`);
+  }
+}
 
-	// Login can briefly redirect across landing routes before the app shell is stable.
-	await page.waitForURL(/st2\.ep1test\.com\/workspace/, {
-		timeout: 60000,
-	});
-
-	await Promise.race([
-		locators.workspaceTitle.waitFor({ state: 'visible', timeout: 45000 }),
-		locators.aiExpertLauncherButton.waitFor({ state: 'visible', timeout: 45000 }),
-	]);
-
+export async function clickElement(locator: Locator, message: string, force: boolean = false): Promise<void> {
+  try {
+    await locator.click({ force, timeout: 30000 });
+  } catch (error) {
+    throw new Error(`${message} - Click action failed after 30000 ms - ${error}`);
+  }
 }

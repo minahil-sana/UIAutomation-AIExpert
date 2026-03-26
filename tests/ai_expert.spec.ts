@@ -1,15 +1,15 @@
 import { BrowserContext, Page, test } from '@playwright/test';
 import creds from '@test_data/login_creds.json';
-import { openLoginPage } from '@ui/login_page/login_page_actions';
-import { login } from '@ui/login_page/login_page_tasks';
-import { openWorkspaceLanding } from '@ui/landing_page/landing_page_actions';
-import { waitForLandingPageReady } from '@utils/browser_actions.utils';
-import { openAiExpert } from '@ui/landing_page/landing_page_tasks';
+import { login } from '@ui/login_page/tasks';
+import { openAiExpertSidePanel } from '@ui/landing_page/actions';
+import { verifyAiExpertLauncherVisible, verifyLandingPageReady } from '@ui/landing_page/assertions';
 
-import * as sidePanelTasks from '@ui/side_panel/side_panel_tasks';
-import * as sidePanelAssertions from '@ui/side_panel/side_panel_assertions';
+import * as sidePanelTasks from '@ui/conversational_panel/tasks';
+import * as sidePanelAssertions from '@ui/conversational_panel/assertions';
 
 type LoginCreds = {
+	baseURL: string;
+	workspaceURL: string;
 	username: string;
 	password: string;
 };
@@ -33,15 +33,14 @@ test.describe.serial('AI Expert - Serial POM Flow', () => {
 	});
 
 	test('login to application and validate landing page', async () => {
-		await openLoginPage(page);
-		await login(page, loginCreds.username, loginCreds.password);
-		await openWorkspaceLanding(page);
-		await waitForLandingPageReady(page);
+		await login(page, loginCreds.username, loginCreds.password, loginCreds.baseURL);
+		await verifyLandingPageReady(page);
+		await verifyAiExpertLauncherVisible(page);
 	});
 
 	test('open side panel and validate default tile sections', async () => {
-		await openAiExpert(page);
-		await sidePanelAssertions.validateDefaultPanelAndTiles(page, enablementTiles);
+		await openAiExpertSidePanel(page);
+		await sidePanelAssertions.verifyDefaultPanelAndTiles(page, enablementTiles);
 	});
 
 	test('knowledge prompt flow with interaction actions and feedback', async () => {
