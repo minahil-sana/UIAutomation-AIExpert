@@ -42,9 +42,8 @@ export async function askKnowledgeQuestionAndValidateResponse(page: Page): Promi
 }
 
 export async function copyFeedbackAndDeleteLatestInteraction(page: Page, feedbackMessage: string): Promise<void> {
-	const locators = conversationalPanelLocators.getConversationalPanelLocators(page);
 	await conversationalPanelActions.copyInteractionText(page);
-	await expect(locators.copyAlert).toBeVisible();
+	await expect(conversationalPanelLocators['Interaction Feedback'].getCopyAlert(page)).toBeVisible();
 
 	await conversationalPanelActions.submitPositiveFeedback(page, feedbackMessage);
 	await conversationalPanelAssertions.verifyFeedbackSuccess(page);
@@ -95,9 +94,8 @@ export async function renameAndDeleteConversation(page: Page, updatedTitle: stri
 
 export async function deleteConversation(page: Page): Promise<void> {
     await conversationalPanelActions.openConversationList(page);
-	const locators = conversationalPanelLocators.getConversationalPanelLocators(page);
-    await locators.conversationNameButton.hover();
-	await locators.conversationDeleteButton.click();
-	await locators.deleteConversationConfirmButton.click();
+	await conversationalPanelLocators['Conversation History'].getConversationNameButton(page).hover();
+	await conversationalPanelLocators['Conversation History'].getConversationDeleteButton(page).click();
+	await conversationalPanelLocators['Confirmation Modals'].getDeleteConversationConfirmButton(page).click();
 }
 

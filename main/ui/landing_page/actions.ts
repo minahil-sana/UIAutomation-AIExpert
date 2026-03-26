@@ -11,5 +11,5 @@ export async function openWorkspaceLanding(page: Page, workspaceURL: string): Pr
 
 export async function openAiExpertSidePanel(page: Page): Promise<void> {
 	const locators = landingPageLocators;
-	await locators.aiExpertLauncherButton(page).click();
+	await locators.getAiExpertLauncherButton(page).click();
 }

@@ -11,12 +11,12 @@ export async function verifyLandingPageReady(page: Page): Promise<void> {
 	});
 
 	await Promise.race([
-		locators.workspaceTitle(page).waitFor({ state: 'visible', timeout: 45000 }),
-		locators.aiExpertLauncherButton(page).waitFor({ state: 'visible', timeout: 45000 }),
+		locators.getWorkspaceTitle(page).waitFor({ state: 'visible', timeout: 45000 }),
+		locators.getAiExpertLauncherButton(page).waitFor({ state: 'visible', timeout: 45000 }),
 	]);
 }
 
 export async function expectAiExpertLauncherVisible(page: Page): Promise<void> {
 	const locators = landingPageLocators;
-	await expect(locators.aiExpertLauncherButton(page)).toBeVisible();
+	await expect(locators.getAiExpertLauncherButton(page)).toBeVisible();
 }
