@@ -1,10 +1,9 @@
 import { expect, Page } from '@playwright/test';
 import { loginPageLocators } from '@ui/login_page/locators';
 
-export async function verifyLoginPageReady(page: Page): Promise<void> {
-	const locators = loginPageLocators;
-	await expect(locators.getLoginForm(page)).toBeVisible();
-	await expect(locators.getUsernameInput(page)).toBeVisible();
-	await expect(locators.getPasswordInput(page)).toBeVisible();
-	await expect(locators.getLoginButton(page)).toBeVisible();
+export async function verifyLoginPageIsVisible(page: Page): Promise<void> {
+	await expect(loginPageLocators.getLoginForm(page)).toBeVisible();
+	await expect(loginPageLocators.getUsernameInput(page)).toBeVisible();
+	await expect(loginPageLocators.getPasswordInput(page)).toBeVisible();
+	await expect(loginPageLocators.getLoginButton(page)).toBeVisible();
 }
