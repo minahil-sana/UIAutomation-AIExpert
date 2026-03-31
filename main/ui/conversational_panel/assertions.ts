@@ -75,6 +75,10 @@ export async function verifyConversationTitle(page: Page, title: string): Promis
 	await expect(conversationalPanelLocators['Conversation Header'].getConversationTitle(page)).toContainText(title, {timeout: 15000});
 }
 
+export async function verifyConversationOpened(page: Page, title: string): Promise<void> {
+	await expect(conversationalPanelLocators['Conversation History'].getConversationItemByTitle(page, title)).toBeVisible({ timeout: 15000 });
+}
+
 export async function verifyDownload(download: Download, extension: '.csv' | '.png' | '.zip'): Promise<void> {
 	const downloadsDir = getDownloadsDirectory();
 	const suggestedFileName = download.suggestedFilename();

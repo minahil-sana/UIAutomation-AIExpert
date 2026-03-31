@@ -189,3 +189,22 @@ export async function openInteractionActions(page: Page): Promise<void> {
 		'Open additional interaction actions panel',
 	);
 }
+
+export async function searchAndOpenConversationByTitle(page: Page, title: string): Promise<void> {
+	await conversationalPanelActions.openConversationList(page);
+	await conversationalPanelActions.searchConversationHistoryByTitle(page, title);
+	const unselectedItem = conversationalPanelLocators['Conversation History'].getConversationItemByTitleUnselected(page, title);
+	await clickElement(
+		unselectedItem,
+		`Open conversation: ${title}`,
+	);
+}
+
+export async function deleteInteractionOneByOne(page: Page, count: number): Promise<void> {
+	await conversationalPanelActions.scrollToConversationTop(page);
+
+	for (let interactionIndex = count - 1; interactionIndex >= 0; interactionIndex--) {
+		await page.waitForTimeout(1000);
+		await deleteInteraction(page);
+	}
+}
