@@ -49,7 +49,9 @@ test.describe.serial('AI Expert - Serial POM Flow', () => {
 		await sidePanelAssertions.verifyDownload(chartDownload, '.png');
 		const conversationDownload = await sidePanelTasks.downloadConversation(page);
 		await sidePanelAssertions.verifyDownload(conversationDownload, '.zip');
-		await sidePanelTasks.renameAndVerifyConversation(page, 'Updated Title');
-		await sidePanelTasks.deleteAndVerifyConversation(page);
+		await sidePanelTasks.renameConversation(page, 'Updated Title');
+		await sidePanelAssertions.verifyConversationTitle(page, 'Updated Title');
+		await sidePanelTasks.deleteConversation(page);
+		await sidePanelAssertions.verifyEmptyDefaultScreen(page);
 	});
 });

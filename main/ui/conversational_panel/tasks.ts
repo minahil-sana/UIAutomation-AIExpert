@@ -41,17 +41,6 @@ export async function downloadConversation(page: Page): Promise<Download> {
 	return downloadConversationZip(page);
 }
 
-export async function renameAndVerifyConversation(page: Page, updatedTitle: string): Promise<void> {
-	await renameConversation(page, updatedTitle);
-	await conversationalPanelAssertions.verifyConversationTitle(page, updatedTitle);
-}
-
-export async function deleteAndVerifyConversation(page: Page): Promise<void> {
-	await conversationalPanelActions.openConversationList(page);
-	await deleteConversation(page);
-	await conversationalPanelAssertions.verifyEmptyDefaultScreen(page);
-}
-
 export async function deleteConversation(page: Page): Promise<void> {
     await conversationalPanelActions.openConversationList(page);
 	await conversationalPanelLocators['Conversation History'].getConversationNameButton(page).hover();
