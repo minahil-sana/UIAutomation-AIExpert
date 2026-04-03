@@ -145,6 +145,43 @@ export async function switchChartTypeToHorizontalBar(page: Page): Promise<void> 
 	);
 }
 
+export async function applyFilterWithBlankOperatorAndVerify(page: Page, columnName: string): Promise<void> {
+	await conversationalPanelActions.expandFilterGroup(page, columnName);
+	await conversationalPanelActions.selectFilterOperator(page, columnName, 'Blank');
+	await conversationalPanelActions.clickApplyFilter(page, columnName);
+	await conversationalPanelAssertions.verifyNoRowsVisible(page);
+	await conversationalPanelActions.clickResetFilter(page, columnName);
+	await conversationalPanelAssertions.verifyRowsRestored(page);
+}
+
+export async function sortColumnandVerifySort(page: Page, columnName: string): Promise<void> {
+	let originalValues = await conversationalPanelActions.getGridColumnValuesByName(page, columnName);
+	await conversationalPanelActions.clickTableColumnHeader(page, columnName);
+	await conversationalPanelAssertions.verifyColumnHeaderSortState(page, columnName, 'ascending');
+	await conversationalPanelAssertions.verifyColumnSortedAscending(page, columnName, originalValues);
+	await conversationalPanelActions.clickTableColumnHeader(page, columnName);
+	await conversationalPanelAssertions.verifyColumnHeaderSortState(page, columnName, 'descending');
+	await conversationalPanelAssertions.verifyColumnSortedDescending(page, columnName, originalValues);
+	await conversationalPanelActions.clickTableColumnHeader(page, columnName);
+	await conversationalPanelAssertions.verifyColumnHeaderSortState(page, columnName, 'none');
+	await conversationalPanelAssertions.verifyColumnSortResetToOriginal(page, columnName, originalValues);
+}
+
+export async function rearrangeColumnsAndVerify(page: Page): Promise<void> {
+	for (let attempt = 1; attempt <= 3; attempt += 1) {
+		try {
+			await conversationalPanelActions.dragColumnHeaderToRightOfColumn(page, 'Created At', 'Owner Id');
+			await conversationalPanelAssertions.verifyFirstTwoColumnHeaders(page, 'Owner Id', 'Created At');
+			return;
+		} catch (error) {
+			if (attempt === 3) {
+				throw error;
+			}
+			await page.waitForTimeout(500);
+		}
+	}
+}
+
 export async function downloadConversationZip(page: Page): Promise<Download> {
 	const [download] = await Promise.all([
 		page.waitForEvent('download'),
