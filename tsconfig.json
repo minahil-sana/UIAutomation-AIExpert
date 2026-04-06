@@ -21,6 +21,9 @@
       ],
       "@utils/*": [
         "./main/utils/*"
+      ],
+      "@aiexpert-api/*": [
+        "./main/api/*"
       ]
 
     },
