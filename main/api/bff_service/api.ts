@@ -1,49 +1,8 @@
 import { Page } from '@playwright/test';
 import prompts from '@test_data/prompts.json';
-
-const REQUEST_TIMEOUT_MS = 30000;
-const STREAM_TIMEOUT_MS = 120000;
-const RESPONSE_PREVIEW_LENGTH = 300;
-const MAX_KEEP_ALIVE_EVENTS = 50;
-
-function getRequiredEnv(name: string): string {
-	const value = process.env[name];
-	if (!value) {
-		throw new Error(`Missing required env variable: ${name}`);
-	}
-	return value;
-}
-
-function sanitizeToken(rawToken: string): string {
-	let token = rawToken.trim();
-	if (token.startsWith('"') && token.endsWith('"')) {
-		token = token.slice(1, -1);
-	}
-	if (token.startsWith('Bearer ')) {
-		return token;
-	}
-	return `Bearer ${token}`;
-}
-
-function buildHeaders(): Record<string, string> {
-	const context = getRequiredEnv('AIEXPERT_CONTEXT');
-	const token = sanitizeToken(getRequiredEnv('AIEXPERT_TOKEN'));
-
-	return {
-		'content-type': 'application/json',
-		authorization: token,
-		context,
-		'x-context': context,
-	};
-}
-
-function getBaseUrl(): string {
-	return getRequiredEnv('AIEXPERT_CHAT_BASE_URL');
-}
-
-function getConversationServiceTitleUrl(conversationId: string): string {
-	return new URL(`/conversation-service/conversations/${conversationId}/title`, getBaseUrl()).toString();
-}
+import apiPath from '@aiexpert-api/apiPaths/paths.json';
+import { buildHeaders, getBaseUrl, REQUEST_TIMEOUT_MS, STREAM_TIMEOUT_MS, RESPONSE_PREVIEW_LENGTH, MAX_KEEP_ALIVE_EVENTS } from '@aiexpert-api/shared/auth';
+import { createConversationPayload } from '@aiexpert-api/bff_service/payload';
 
 export async function createInteraction(
 	page: Page,
@@ -52,20 +11,17 @@ export async function createInteraction(
 	baseUrl: string,
 	headers: Record<string, string>,
 ): Promise<{ conversationId: string; interactionId: string }> {
-	const url = `${baseUrl}/create`;
+	const endpoint = new URL(apiPath['bff-service'].createConversation, baseUrl).toString();
 
-	const response = await page.request.post(url, {
+	const response = await page.request.post(endpoint, {
 		headers,
-		data: {
-			userMessage: prompt,
-			conversationId,
-		},
+		data: createConversationPayload(prompt, conversationId),
 		timeout: REQUEST_TIMEOUT_MS,
 	});
 	const responseText = await response.text();
 
 	if (!response.ok()) {
-		throw new Error(`Create failed: ${response.status()} at ${url} - ${responseText.substring(0, RESPONSE_PREVIEW_LENGTH)}`);
+		throw new Error(`Create failed: ${response.status()} at ${endpoint} - ${responseText.substring(0, RESPONSE_PREVIEW_LENGTH)}`);
 	}
 
 	let data: Record<string, unknown>;
@@ -73,7 +29,7 @@ export async function createInteraction(
 		data = JSON.parse(responseText) as Record<string, unknown>;
 	} catch {
 		throw new Error(
-			`Create failed: expected JSON but got non-JSON response at ${url}. ` +
+			`Create failed: expected JSON but got non-JSON response at ${endpoint}. ` +
 			`Body starts with: ${responseText.substring(0, RESPONSE_PREVIEW_LENGTH)}`,
 		);
 	}
@@ -100,7 +56,8 @@ export async function streamResponse(
 ): Promise<string> {
 	const controller = new AbortController();
 	const timeout = setTimeout(() => controller.abort(), STREAM_TIMEOUT_MS);
-	const url = `${baseUrl}/stream/${conversationId}/interaction/${interactionId}?generateStream=true`;
+	const streamPath = `${apiPath['bff-service'].getStream}${conversationId}/interaction/${interactionId}?generateStream=true`;
+	const url = new URL(streamPath, baseUrl).toString();
 
 	try {
 		const response = await fetch(url, {
@@ -200,28 +157,6 @@ export async function sendPrompt(
 		interactionId: created.interactionId,
 		finalResponse,
 	};
-}
-
-export async function updateConversationTitle(
-	page: Page,
-	conversationId: string,
-	newTitle: string,
-): Promise<string> {
-	const url = getConversationServiceTitleUrl(conversationId);
-	const headers = buildHeaders();
-
-	const response = await page.request.put(url, {
-		headers,
-		data: { title: newTitle },
-		timeout: REQUEST_TIMEOUT_MS,
-	});
-
-	if (!response.ok()) {
-		const responseText = await response.text();
-		throw new Error(`Title update failed: ${response.status()} - ${responseText.substring(0, RESPONSE_PREVIEW_LENGTH)}`);
-	}
-
-	return newTitle;
 }
 
 export async function seedConversationWithTenInteractions(

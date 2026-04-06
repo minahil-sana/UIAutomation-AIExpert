@@ -5,7 +5,8 @@ import { openAiExpertSidePanel } from '@ui/landing_page/actions';
 import { verifyAiExpertLauncherVisible, verifyLandingPageReady } from '@ui/landing_page/assertions';
 import * as sidePanelTasks from '@ui/conversational_panel/tasks';
 import * as sidePanelAssertions from '@ui/conversational_panel/assertions';
-import { seedConversationWithTenInteractions, updateConversationTitle } from '../main/api/conversation_seed.api';
+import { seedConversationWithTenInteractions } from '@aiexpert-api/bff_service/api';
+import { updateConversationTitle } from '@aiexpert-api/conversation_service/api';
 
 test.describe.serial('AI Expert - Test with Pre Reqs', () => {
 	test.setTimeout(900000);

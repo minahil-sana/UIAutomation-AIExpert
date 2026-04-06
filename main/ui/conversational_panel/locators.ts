@@ -47,7 +47,7 @@ export const conversationalPanelLocators = {
     'Conversation History': {
         getConversationListButton: (page: Page): Locator => page.getByTestId('conversation-history__btn'),
         getConversationSearchInput: (page: Page): Locator => page.getByTestId('conversation-history__search-input').locator('input'),
-        getConversationItemByTitle: (page: Page, title: string): Locator => page.getByTestId('conversation-history__item--0-isSelected').filter({ hasText: title }),
+        getConversationItemByTitle: (page: Page, title: string): Locator => conversationalPanelLocators['Conversation Header'].getConversationTitle(page).filter({ hasText: title }),
         getConversationItemByTitleUnselected: (page: Page, title: string): Locator => page.getByTestId(/conversation-history__item--\d+(?!-isSelected)/).filter({ hasText: title }).first(),
         getConversationNameButton: (page: Page): Locator => page.getByTestId('conversation-history__item--0-isSelected'),
         getConversationRenameButton: (page: Page): Locator => page.getByTestId('conversation-history__item-edit-btn--0'),
