@@ -1,7 +1,7 @@
 import { Page } from '@playwright/test';
 import prompts from '@test_data/prompts.json';
 import apiPath from '@aiexpert-api/apiPaths/paths.json';
-import { buildHeaders, getBaseUrl, REQUEST_TIMEOUT_MS, STREAM_TIMEOUT_MS, RESPONSE_PREVIEW_LENGTH, MAX_KEEP_ALIVE_EVENTS } from '@aiexpert-api/shared/auth';
+import * as auth from '@aiexpert-api/shared/auth';
 import { createConversationPayload } from '@aiexpert-api/bff_service/payload';
 
 export async function createInteraction(
@@ -16,12 +16,12 @@ export async function createInteraction(
 	const response = await page.request.post(endpoint, {
 		headers,
 		data: createConversationPayload(prompt, conversationId),
-		timeout: REQUEST_TIMEOUT_MS,
+		timeout: auth.REQUEST_TIMEOUT_MS,
 	});
 	const responseText = await response.text();
 
 	if (!response.ok()) {
-		throw new Error(`Create failed: ${response.status()} at ${endpoint} - ${responseText.substring(0, RESPONSE_PREVIEW_LENGTH)}`);
+		throw new Error(`Create failed: ${response.status()} at ${endpoint} - ${responseText.substring(0, auth.RESPONSE_PREVIEW_LENGTH)}`);
 	}
 
 	let data: Record<string, unknown>;
@@ -30,7 +30,7 @@ export async function createInteraction(
 	} catch {
 		throw new Error(
 			`Create failed: expected JSON but got non-JSON response at ${endpoint}. ` +
-			`Body starts with: ${responseText.substring(0, RESPONSE_PREVIEW_LENGTH)}`,
+			`Body starts with: ${responseText.substring(0, auth.RESPONSE_PREVIEW_LENGTH)}`,
 		);
 	}
 
@@ -55,7 +55,7 @@ export async function streamResponse(
 	headers: Record<string, string>,
 ): Promise<string> {
 	const controller = new AbortController();
-	const timeout = setTimeout(() => controller.abort(), STREAM_TIMEOUT_MS);
+	const timeout = setTimeout(() => controller.abort(), auth.STREAM_TIMEOUT_MS);
 	const streamPath = `${apiPath['bff-service'].getStream}${conversationId}/interaction/${interactionId}?generateStream=true`;
 	const url = new URL(streamPath, baseUrl).toString();
 
@@ -105,7 +105,7 @@ export async function streamResponse(
 
 				if (event['type'] === 'keep-alive') {
 					keepAliveCount += 1;
-					if (keepAliveCount > MAX_KEEP_ALIVE_EVENTS && !finalText) {
+					if (keepAliveCount > auth.MAX_KEEP_ALIVE_EVENTS && !finalText) {
 						throw new Error('Only keep-alives received');
 					}
 					continue;
@@ -162,8 +162,8 @@ export async function sendPrompt(
 export async function seedConversationWithTenInteractions(
 	page: Page,
 ): Promise<{ conversationId: string; interactionIds: string[]; responses: string[] }> {
-	const baseUrl = getBaseUrl();
-	const headers = buildHeaders();
+	const baseUrl = auth.getBaseUrl();
+	const headers = auth.buildHeaders();
 
 	let conversationId: string | null = null;
 	const interactionIds: string[] = [];
