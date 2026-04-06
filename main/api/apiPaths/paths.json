@@ -4,6 +4,7 @@
     "getStream": "/bff-service/api/chat/stream/"
   },
   "conversation-service": {
-    "createConversation": "/conversation-service/conversations"
+    "createConversation": "/conversation-service/conversations",
+    "getDashboards": "/conversation-service/dashboards"
   }
 }
