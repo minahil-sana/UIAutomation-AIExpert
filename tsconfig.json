@@ -21,8 +21,10 @@
       ],
       "@utils/*": [
         "./main/utils/*"
+      ],
+      "@aiexpert-api/*": [
+        "./main/api/*"
       ]
-
     },
     "types": [
       "node",

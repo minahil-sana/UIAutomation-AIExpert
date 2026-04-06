@@ -6,7 +6,6 @@ import { verifyAiExpertLauncherVisible, verifyLandingPageReady } from '@ui/landi
 import * as sidePanelTasks from '@ui/conversational_panel/tasks';
 import * as sidePanelAssertions from '@ui/conversational_panel/assertions';
 
-const loginCreds = creds;
 const enablementTiles = ['About Me', 'Knowledge', 'Devices', 'Clients', 'Licensing', 'Alerts'];
 
 test.describe.serial('AI Expert - Serial POM Flow', () => {
@@ -23,7 +22,7 @@ test.describe.serial('AI Expert - Serial POM Flow', () => {
 	});
 
 	test('login to application and validate landing page', async () => {
-		await login(page, loginCreds.username, loginCreds.password, loginCreds.baseURL);
+		await login(page, creds.username, creds.password, creds.baseURL);
 		await verifyLandingPageReady(page);
 		await verifyAiExpertLauncherVisible(page);
 	});
