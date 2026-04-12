@@ -134,6 +134,11 @@ export async function askFollowUpInChat(page: Page, prompt: string): Promise<voi
 	await conversationalPanelLocators['Chat Input'].getChatInput(page).press('Enter');
 }
 
+export async function askPromptAndVerifyResponseGenerated(page: Page, prompt: string, index: number): Promise<void> {
+	await askFollowUpInChat(page, prompt);
+	await conversationalPanelAssertions.verifyResponseGeneratedforNonRag(page, index);
+}
+
 export async function switchChartTypeToHorizontalBar(page: Page): Promise<void> {
 	await clickElement(
 		conversationalPanelLocators['Table and Chart'].getChartOptionsButton(page),
@@ -177,4 +182,77 @@ export async function openInteractionActions(page: Page): Promise<void> {
 		conversationalPanelLocators['Interaction Actions'].getAdditionalActionsTrigger(page),
 		'Open additional interaction actions panel',
 	);
+}
+
+export async function renameDraftCanvas(page: Page, itemIndex: number, updatedTitle: string): Promise<void> {
+	await conversationalPanelLocators['Canvas History'].getDraftItem(page, itemIndex).hover();
+	await conversationalPanelActions.clickDraftCanvasRenameButton(page, itemIndex);
+	await typeText(
+		conversationalPanelLocators['Canvas History'].getDraftItemRenameInput(page, itemIndex),
+		updatedTitle,
+		`Type updated draft canvas title for item ${itemIndex}`,
+	);
+	await conversationalPanelLocators['Canvas History'].getDraftItemRenameInput(page, itemIndex).press('Enter');
+}
+
+export async function refreshCanvas(page: Page): Promise<Date> {
+	const refreshClickedAt = new Date();
+	await conversationalPanelActions.clickCanvasRefreshButton(page);
+	return refreshClickedAt;
+}
+
+export async function publishCanvas(page: Page): Promise<void> {
+	await conversationalPanelActions.clickCanvasPublishButton(page);
+}
+
+export async function switchCanvasWidgetChartTypeToHorizontalBar(page: Page): Promise<void> {
+	await conversationalPanelActions.openCanvasWidgetActions(page);
+	await conversationalPanelActions.clickCanvasWidgetHorizontalBarOption(page);
+}
+
+export async function resizeFirstCanvasWidget(page: Page): Promise<void> {
+	const resizeHandle = conversationalPanelLocators['Canvas Workspace'].getWidget1ResizeHandle(page);
+	const box = await resizeHandle.boundingBox();
+	if (!box) throw new Error('Widget 1 SE resize handle not found');
+	const startX = box.x + box.width / 2;
+	const startY = box.y + box.height / 2;
+	await page.mouse.move(startX, startY);
+	await page.mouse.down();
+	await page.mouse.move(startX + 441, startY + 60, { steps: 30 });
+	await page.mouse.up();
+}
+
+export async function rearrangeFirstCanvasWidget(page: Page): Promise<string> {
+	const titleLocator = conversationalPanelLocators['Canvas Workspace'].getWidget1Title(page);
+	const movedWidgetTitle = (await titleLocator.innerText()).trim();
+	const dragHandle = conversationalPanelLocators['Canvas Workspace'].getWidget1DragHandle(page);
+	const box = await dragHandle.boundingBox();
+	if (!box) throw new Error('Widget 1 drag handle not found');
+	const startX = box.x + box.width / 2;
+	const startY = box.y + box.height / 2;
+	await page.mouse.move(startX, startY);
+	await page.mouse.down();
+	await page.mouse.move(startX, startY + 450, { steps: 40 });
+	await page.mouse.up();
+	return movedWidgetTitle;
+}
+
+export async function deleteAllCanvasWidgets(page: Page): Promise<void> {
+	const maxDeletions = 10;
+	for (let i = 0; i < maxDeletions; i++) {
+		const widgetCount = await conversationalPanelLocators['Canvas Workspace'].getPublishedWidgets(page).count();
+		if (widgetCount === 0) {
+			break;
+		}
+
+		await conversationalPanelActions.openCanvasWidgetActions(page);
+		await conversationalPanelActions.clickCanvasWidgetDeleteButton(page);
+
+		await expect
+			.poll(
+				async () => await conversationalPanelLocators['Canvas Workspace'].getPublishedWidgets(page).count(),
+				{ timeout: 15000 },
+			)
+			.toBeLessThan(widgetCount);
+	}
 }

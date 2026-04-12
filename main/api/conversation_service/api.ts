@@ -30,7 +30,7 @@ export async function updateConversationTitle(
 
 export async function getAllDashboards(
 	page: Page,
-): Promise<Array<{ status?: string }>> {
+): Promise<Array<{ id?: string; status?: string }>> {
 	const endpoint = new URL(apiPath['conversation-service'].getDashboards, auth.getBaseUrl());
 
 	const response = await page.request.get(endpoint.toString(), {
@@ -46,7 +46,7 @@ export async function getAllDashboards(
 	}
 
 	try {
-		return JSON.parse(responseText) as Array<{ status?: string }>;
+		return JSON.parse(responseText) as Array<{ id?: string; status?: string }>;
 	} catch {
 		throw new Error(
 			`Get dashboards failed: expected JSON response - ${responseText.substring(0, auth.RESPONSE_PREVIEW_LENGTH)}`,
