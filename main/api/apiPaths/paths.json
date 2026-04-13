@@ -1,0 +1,10 @@
+{
+  "bff-service": {
+    "createConversation": "/bff-service/api/chat/create",
+    "getStream": "/bff-service/api/chat/stream/"
+  },
+  "conversation-service": {
+    "createConversation": "/conversation-service/conversations",
+    "getDashboards": "/conversation-service/dashboards"
+  }
+}

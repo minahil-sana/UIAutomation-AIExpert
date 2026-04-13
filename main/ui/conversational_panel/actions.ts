@@ -40,3 +40,60 @@ export async function openConversationList(page: Page): Promise<void> {
 		'Open conversation list',
 	);
 }
+
+export async function clickConvertToCanvasButton(page: Page): Promise<void> {
+	await clickElement(
+		conversationalPanelLocators['Conversation Header'].getConvertToCanvasButton(page),
+		'Click convert to canvas button',
+	);
+	await page.waitForTimeout(5000);
+}
+
+export async function openCanvasHistory(page: Page): Promise<void> {
+	await clickElement(
+		conversationalPanelLocators['Canvas History'].getCanvasHistoryButton(page),
+		'Click canvas history button',
+	);
+}
+
+export async function clickDraftCanvasRenameButton(page: Page, itemIndex: number): Promise<void> {
+	await clickElement(
+		conversationalPanelLocators['Canvas History'].getDraftItemRenameButton(page, itemIndex),
+		`Click draft canvas rename button for item ${itemIndex}`,
+	);
+}
+
+export async function clickCanvasRefreshButton(page: Page): Promise<void> {
+	await clickElement(
+		conversationalPanelLocators['Canvas Workspace'].getManualRefreshButton(page),
+		'Click canvas refresh button',
+	);
+}
+
+export async function clickCanvasPublishButton(page: Page): Promise<void> {
+	await clickElement(
+		conversationalPanelLocators['Canvas Workspace'].getPublishButton(page),
+		'Click canvas publish button',
+	);
+}
+
+export async function openCanvasWidgetActions(page: Page): Promise<void> {
+	await clickElement(
+		conversationalPanelLocators['Canvas Workspace'].getWidgetActionsButton(page),
+		'Open canvas widget actions',
+	);
+}
+
+export async function clickCanvasWidgetHorizontalBarOption(page: Page): Promise<void> {
+	await clickElement(
+		conversationalPanelLocators['Canvas Workspace'].getWidgetChartSwitchHorizontalBar(page),
+		'Switch canvas widget chart type to horizontal bar',
+	);
+}
+
+export async function clickCanvasWidgetDeleteButton(page: Page): Promise<void> {
+	await clickElement(
+		conversationalPanelLocators['Canvas Workspace'].getWidgetDeleteButton(page),
+		'Click canvas widget delete button',
+	);
+}
